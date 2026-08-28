@@ -2,7 +2,7 @@
 
 This is the unfiltered version of how this project actually came together — including the parts that didn't work the first time. Kept here rather than in the README because it's long, but it's arguably the most useful part of this repo if you're trying to learn from it rather than just clone it.
 
----
+\---
 
 ## Power architecture — attempt 1: 4×AA NiMH pack
 
@@ -10,11 +10,11 @@ This is the unfiltered version of how this project actually came together — in
 
 **Symptom:** Motors worked on the bench with no load, but stalled or clicked without turning once any real resistance was applied (e.g. driving on carpet).
 
-**Diagnosis:** TT motor stall current is ~1.1A each — 2.2A combined peak. NiMH cells have relatively high internal resistance, so pack voltage sagged well below the motor driver's 4.8V minimum the instant real current was demanded.
+**Diagnosis:** TT motor stall current is \~1.1A each — 2.2A combined peak. NiMH cells have relatively high internal resistance, so pack voltage sagged well below the motor driver's 4.8V minimum the instant real current was demanded.
 
 **Also discovered along the way:** the motor driver's screw terminals need to be fully tightened — a loose connection caused one motor to intermittently drop out, which looked like a wiring fault but was just a loose screw.
 
----
+\---
 
 ## Power architecture — attempt 2: single-cell Li-Ion + 5V boost
 
@@ -28,7 +28,7 @@ This is the unfiltered version of how this project actually came together — in
 
 **Root cause:** Chose a motor driver sized for much larger motors/current (2×15A) than this project needed, which meant its practical operating envelope didn't suit a low-voltage, low-current setup.
 
----
+\---
 
 ## Power architecture — attempt 3 (final): 3.7V direct + smaller motor driver
 
@@ -38,19 +38,19 @@ This is the unfiltered version of how this project actually came together — in
 
 **Trade-off accepted:** TB6612FNG is rated 1.2A continuous per channel against a 1.1A motor stall current — a thin margin. Acceptable for normal driving; sustained stall (e.g. wedged against furniture) should be avoided.
 
----
+\---
 
 ## Battery selection and charging
 
 Went through several options before landing on a repurposed 3.7V 525mAh Nintendo Switch Joy-Con battery (Hisewen HAC-006):
 
-- **7.4V 2S LiPo** — rejected. No affordable module exists that combines USB-C charging *and* proper per-cell balance charging. Non-balancing USB-C boards are common but risk long-term cell drift on a 2-cell pack.
-- **Better-quality NiMH (Eneloop Pro)** — a genuinely valid alternative that was ultimately not pursued once the smaller motor driver made single-cell Li-Ion viable, but worth considering as a simpler, safer option if avoiding LiPo entirely.
-- **Single-cell Li-Ion (final choice)** — no balance charging needed since there's only one cell. TP4056 USB-C charging board handles it directly.
+* **7.4V 2S LiPo** — rejected. No affordable module exists that combines USB-C charging *and* proper per-cell balance charging. Non-balancing USB-C boards are common but risk long-term cell drift on a 2-cell pack.
+* **Better-quality NiMH (Eneloop Pro)** — a genuinely valid alternative that was ultimately not pursued once the smaller motor driver made single-cell Li-Ion viable, but worth considering as a simpler, safer option if avoiding LiPo entirely.
+* **Single-cell Li-Ion (final choice)** — no balance charging needed since there's only one cell. TP4056 USB-C charging board handles it directly.
 
-**Known compromise:** the TP4056 board's default charge current (1000mA) is roughly 2C for a 525mAh cell — higher than the ideal 0.5–1C. The battery's built-in protection circuit provides a safety backstop (it will cut charging if it gets too hot), but the correct fix is replacing the board's SMD programming resistor to bring charge current down to ~500mA. Not yet done on this build — flagged here for anyone replicating this.
+**Known compromise:** the TP4056 board's default charge current (1000mA) is roughly 2C for a 525mAh cell — higher than the ideal 0.5–1C. The battery's built-in protection circuit provides a safety backstop (it will cut charging if it gets too hot), but the correct fix is replacing the board's SMD programming resistor to bring charge current down to \~500mA. Not yet done on this build — flagged here for anyone replicating this.
 
----
+\---
 
 ## Communication protocol
 
@@ -58,7 +58,7 @@ Settled on a single-byte command protocol between the HUZZAH and Metro M0 (`0xFF
 
 Rejected alternatives: I2C and SoftwareSerial were both considered to avoid the HUZZAH's hardware TX pin conflicting with USB traffic during development. Both were dropped — I2C because the ESP8266's WiFi interrupts make it an unreliable I2C master, and SoftwareSerial for the same underlying interrupt-timing reason. The simpler fix was powering the HUZZAH from a standalone supply (not USB) during real operation, and accepting the USB conflict only during development/flashing.
 
----
+\---
 
 ## Chassis — Fusion 360 design vs. plywood reality
 
@@ -82,10 +82,11 @@ motor driver, battery, breadboard, Metro M0, and HUZZAH with reasonable
 spacing between them — refer to the component dimensions in
 `hardware/bill-of-materials.md` rather than the Fusion file's dimensions.
 
----
+\---
 
 ## Hardware mishaps
 
-- **USB-A vs USB-C cable:** the TP4056 board didn't respond to a USB-C to USB-C cable from a modern PD power bank — needed a USB-A to USB-C cable instead. Cheap USB-C charging boards frequently lack PD negotiation support.
-- **Cold solder joints:** early motor driver soldering attempts failed because solder was applied to the iron rather than to the (pre-heated) joint. Tinning both the wire and the pad separately before joining fixed this.
-- **Hot glue on PCBs:** almost mounted boards directly with a hot glue gun (~195°C) — would likely have damaged components. Switched to gluing chassis-side only, with the board resting on the glue frame rather than glue touching the board.
+* **USB-A vs USB-C cable:** the TP4056 board didn't respond to a USB-C to USB-C cable from a modern PD power bank — needed a USB-A to USB-C cable instead. Cheap USB-C charging boards frequently lack PD negotiation support.
+* **Cold solder joints:** early motor driver soldering attempts failed because solder was applied to the iron rather than to the (pre-heated) joint. Tinning both the wire and the pad separately before joining fixed this.
+* **Hot glue on PCBs:** would likely have damaged components if used hot glue to attach them to the base, so used self adhesive cable clips instead.
+
