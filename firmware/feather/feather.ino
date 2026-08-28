@@ -1,42 +1,29 @@
-/*
-  Robot Car — Feather HUZZAH firmware
-  ------------------------------------
-  Runs on: Adafruit Feather HUZZAH (ESP8266)
-  Role:    Creates its own WiFi access point, serves a control web page,
-           and continuously streams a single-byte movement command to
-           the Metro M0 over hardware Serial.
-
-  IMPORTANT — power during development vs. normal use:
-  The ESP8266 exposes only one hardware UART, which is shared with the
-  USB-to-serial chip. While this board is connected to a computer via
-  USB (e.g. during flashing or Serial Monitor debugging), USB traffic
-  will appear on the TX pin alongside your motor commands. For real
-  operation, power this board from a standalone source (battery via
-  the Verter) with USB disconnected.
-*/
-
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
 // ============================================================
 // CONFIGURATION — edit these
 // ============================================================
-const char* WIFI_SSID     = "RobotCar";     // name of the network THIS BOARD creates
-const char* WIFI_PASSWORD = "robot1234";    // password for that network
+const char* WIFI_SSID     = "Robot Car";      // network name your phone connects to
+const char* WIFI_PASSWORD = "Vroom123";      // password for that network
 
-// Command bytes — must match Metro M0 firmware exactly
+// Command bytes — must match Metro M0 definitions exactly
 #define CMD_FORWARD  0xFF
 #define CMD_BACKWARD 0x01
 #define CMD_RIGHT    0xAA
 #define CMD_LEFT     0x55
 #define CMD_STOP     0x00
 
-ESP8266WebServer server(80);
-byte currentCommand = CMD_STOP;
+// ============================================================
+// WEB SERVER
+// ============================================================
+ESP8266WebServer server(80);    // 80 is the standard HTTP port
 
 // ============================================================
-// HTML / CSS / JS — edit freely, this is just presentation
+// CURRENT STATE
 // ============================================================
+byte currentCommand = CMD_STOP;
+
 const char INDEX_HTML[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
 <html>
@@ -44,6 +31,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robot Car</title>
+
     <style>
         body {
             background: #1a1a1a;
@@ -55,7 +43,9 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             font-family: monospace;
             color: white;
         }
-        .controls { text-align: center; }
+        .controls {
+            text-align: center;
+        }
         .btn {
             width: 80px;
             height: 80px;
@@ -69,13 +59,29 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             user-select: none;
             -webkit-user-select: none;
         }
-        .btn:active { background: #555; }
-        .row { display: flex; justify-content: center; }
+        .btn:active {
+            background: #555;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+        }
+        h1, h2, h3 {
+            font-family: monospace, sans-serif;
+            font-weight: 700;
+            font-size: 100px;
+            color: pink;
+        }
     </style>
 </head>
 <body>
     <div class="controls">
-        <div class="row"><button class="btn" id="forward">▲</button></div>
+        <div class="row">
+            <h1>Robot Car</h1>
+        </div>
+        <div class="row">
+            <button class="btn" id="forward">▲</button>
+        </div>
         <div class="row">
             <button class="btn" id="left">◄</button>
             <button class="btn" id="backward">▼</button>
@@ -84,6 +90,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
     </div>
 
     <script>
+        // ── Command routing ──
         const commands = {
             forward:  '/forward',
             backward: '/backward',
@@ -95,11 +102,11 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
         let sendInterval = null;
 
         function startCommand(direction) {
-            if (activeKey === direction) return;
-            stopCommand();
+            if (activeKey === direction) return;  // already active
+            stopCommand();                         // cancel any previous
             activeKey = direction;
-            sendRequest(direction);
-            sendInterval = setInterval(() => sendRequest(direction), 100);
+            sendRequest(direction);                // send immediately
+            sendInterval = setInterval(() => sendRequest(direction), 100);  // then every 100ms
         }
 
         function stopCommand() {
@@ -113,17 +120,19 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
 
         function sendRequest(direction) {
             fetch(direction === 'stop' ? '/stop' : commands[direction])
-                .catch(() => {});
+                .catch(() => {});   // silently ignore network errors
         }
 
+        // ── Button events (mouse + touch) ──
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('mousedown',  () => startCommand(btn.id));
             btn.addEventListener('touchstart', (e) => { e.preventDefault(); startCommand(btn.id); });
             btn.addEventListener('mouseup',    stopCommand);
             btn.addEventListener('touchend',   stopCommand);
-            btn.addEventListener('mouseleave', stopCommand);
+            btn.addEventListener('mouseleave', stopCommand);  // finger slides off button
         });
 
+        // ── Keyboard events ──
         const keyMap = {
             'ArrowUp'   : 'forward',
             'ArrowDown' : 'backward',
@@ -149,12 +158,34 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
 // ============================================================
 // ROUTE HANDLERS
 // ============================================================
-void handleRoot()     { server.send(200, "text/html", INDEX_HTML); }
-void handleForward()  { currentCommand = CMD_FORWARD;  server.send(200, "text/plain", "ok"); }
-void handleBackward() { currentCommand = CMD_BACKWARD; server.send(200, "text/plain", "ok"); }
-void handleRight()    { currentCommand = CMD_RIGHT;    server.send(200, "text/plain", "ok"); }
-void handleLeft()     { currentCommand = CMD_LEFT;     server.send(200, "text/plain", "ok"); }
-void handleStop()     { currentCommand = CMD_STOP;     server.send(200, "text/plain", "ok"); }
+void handleRoot() {
+    server.send(200, "text/html", INDEX_HTML);
+}
+
+void handleForward() {
+    currentCommand = CMD_FORWARD;
+    server.send(200, "text/plain", "ok");
+}
+
+void handleBackward() {
+    currentCommand = CMD_BACKWARD;
+    server.send(200, "text/plain", "ok");
+}
+
+void handleRight() {
+    currentCommand = CMD_RIGHT;
+    server.send(200, "text/plain", "ok");
+}
+
+void handleLeft() {
+    currentCommand = CMD_LEFT;
+    server.send(200, "text/plain", "ok");
+}
+
+void handleStop() {
+    currentCommand = CMD_STOP;
+    server.send(200, "text/plain", "ok");
+}
 
 // ============================================================
 // SETUP
@@ -162,16 +193,18 @@ void handleStop()     { currentCommand = CMD_STOP;     server.send(200, "text/pl
 void setup() {
     Serial.begin(9600);
 
+    // Create WiFi access point
     WiFi.softAP(WIFI_SSID, WIFI_PASSWORD);
     Serial.print("Access point started. IP: ");
-    Serial.println(WiFi.softAPIP());   // typically 192.168.4.1
+    Serial.println(WiFi.softAPIP());   // usually 192.168.4.1
 
-    server.on("/",         handleRoot);
-    server.on("/forward",  handleForward);
-    server.on("/backward", handleBackward);
-    server.on("/right",    handleRight);
-    server.on("/left",     handleLeft);
-    server.on("/stop",     handleStop);
+    // Register routes
+    server.on("/",        handleRoot);
+    server.on("/forward", handleForward);
+    server.on("/backward",handleBackward);
+    server.on("/right",   handleRight);
+    server.on("/left",    handleLeft);
+    server.on("/stop",    handleStop);
 
     server.begin();
     Serial.println("Web server started.");
@@ -181,8 +214,7 @@ void setup() {
 // LOOP
 // ============================================================
 void loop() {
-    server.handleClient();
-    Serial.write(currentCommand);
-    delay(50);   // ~20 bytes/sec — plenty for the Metro M0's 500ms timeout,
-                 // and avoids hammering the CPU/UART at full speed
+    server.handleClient();          // process any incoming HTTP requests
+    Serial.write(currentCommand);   // continuously send current state to Metro M0
+    delay(50); // Breathing room for the Feather, so as to not overheat unnecessarily.
 }
