@@ -2,7 +2,11 @@
 
 A two-wheeled robot car driven entirely from a phone browser over its own local WiFi network — no app, no internet connection required. Built from scratch as a first hardware project, with zero prior electronics experience going in.
 
+
+
 !\[Robot car](docs/images/robot-hero.jpg)
+
+
 
 ## Features
 
