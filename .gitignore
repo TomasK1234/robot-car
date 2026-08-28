@@ -1,0 +1,18 @@
+# Arduino
+*.hex
+*.elf
+*.bin
+build/
+.pio/
+
+# Fusion 360
+*.f3d.lock
+~$*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
