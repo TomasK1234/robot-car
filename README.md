@@ -36,7 +36,7 @@ See [`docs/build-log.md`](docs/build-log.md) for the full reasoning behind this 
 
 Full parts list and approximate cost: [`hardware/bill-of-materials.md`](hardware/bill-of-materials.md)
 
-Wiring diagram: [`hardware/wiring-diagram.png`](hardware/wiring-diagram.png)
+Wiring diagram: [`hardware/wiring-diagram.svg`](hardware/wiring-diagram.svg)
 
 Core components:
 - Adafruit Metro M0 Express — motor control logic
