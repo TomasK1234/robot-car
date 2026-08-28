@@ -2,7 +2,7 @@
 
 A two-wheeled robot car driven entirely from a phone browser over its own local WiFi network — no app, no internet connection required. Built from scratch as a first hardware project, with zero prior electronics experience going in.
 
-!\[Robot car](https://raw.githubusercontent.com/TomasK1234/robot-car/docs/images/robot-hero.jpg)
+!\[Robot car](https://raw.githubusercontent.com/TomasK1234/robot-car/tree/main/docs/images/robot-hero.jpg)
 
 ## Features
 
@@ -50,7 +50,7 @@ Core components:
 
 ## Firmware
 
-* [`firmware/metro\\\_m0/`](firmware/metro_m0) — motor control, command decoding, timeout safety
+* [`firmware/metro\\\\\\\_m0/`](firmware/metro_m0) — motor control, command decoding, timeout safety
 * [`firmware/huzzah/`](firmware/huzzah) — WiFi access point, web server, control interface
 
 Both are Arduino sketches. See inline comments for pin mappings — these must match your own wiring if you're replicating this build.
