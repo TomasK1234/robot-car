@@ -2,14 +2,14 @@
 
 A two-wheeled robot car driven entirely from a phone browser over its own local WiFi network — no app, no internet connection required. Built from scratch as a first hardware project, with zero prior electronics experience going in.
 
-![Robot car](docs/images/robot-hero.jpg)
+!\[Robot car](docs/images/robot-hero.jpg)
 
 ## Features
 
-- Drive forward, backward, left, and right from any phone or laptop browser
-- Robot creates its own WiFi access point — connect and go, no router needed
-- Press-and-hold controls with automatic stop on connection loss (500ms safety timeout)
-- Simple plywood chassis, two-microcontroller architecture: one board dedicated to WiFi/web serving, one dedicated to real-time motor control
+* Drive forward, backward, left, and right from any phone or laptop browser
+* Robot creates its own WiFi access point — connect and go, no router needed
+* Press-and-hold controls with automatic stop on connection loss (500ms safety timeout)
+* Simple plywood chassis, two-microcontroller architecture: one board dedicated to WiFi/web serving, one dedicated to real-time motor control
 
 ## How it works
 
@@ -39,18 +39,19 @@ Full parts list and approximate cost: [`hardware/bill-of-materials.md`](hardware
 Wiring diagram: [`hardware/wiring-diagram.svg`](hardware/wiring-diagram.svg)
 
 Core components:
-- Adafruit Metro M0 Express — motor control logic
-- Adafruit Feather HUZZAH (ESP8266) — WiFi + web server
-- DollaTek TB6612FNG dual motor driver
-- 2× TT DC gear motors
-- Adafruit Verter (buck-boost) — regulated logic power
-- 3.7V Li-Ion cell + TP4056 USB-C charging board
-- 9mm plywood base plate chassis
+
+* Adafruit Metro M0 Express — motor control logic
+* Adafruit Feather HUZZAH (ESP8266) — WiFi + web server
+* DollaTek TB6612FNG dual motor driver
+* 2× TT DC gear motors
+* Adafruit Verter (buck-boost) — regulated logic power
+* 3.7V Li-Ion cell + TP4056 USB-C charging board
+* 9mm plywood base plate chassis
 
 ## Firmware
 
-- [`firmware/metro_m0/`](firmware/metro_m0) — motor control, command decoding, timeout safety
-- [`firmware/huzzah/`](firmware/huzzah) — WiFi access point, web server, control interface
+* [`firmware/metro/`](firmware/metro) — motor control, command decoding, timeout safety
+* [`firmware/feather/`](firmware/feather) — WiFi access point, web server, control interface
 
 Both are Arduino sketches. See inline comments for pin mappings — these must match your own wiring if you're replicating this build.
 
@@ -65,3 +66,4 @@ This project went through two full power-architecture rewrites and a fair amount
 ## License
 
 MIT — see [`LICENSE`](LICENSE). Free to use, modify, and build on.
+
