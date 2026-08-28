@@ -4,7 +4,7 @@ A two-wheeled robot car driven entirely from a phone browser over its own local 
 
 
 
-!\[Robot car](docs/images/robot-hero.jpg)
+![Robot car](docs/images/robot-hero.jpg)
 
 
 
