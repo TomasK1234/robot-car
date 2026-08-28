@@ -54,8 +54,8 @@ Core components:
 
 ## Firmware
 
-* [`firmware/metro\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_m0/`](firmware/metro_m0) — motor control, command decoding, timeout safety
-* [`firmware/huzzah/`](firmware/huzzah) — WiFi access point, web server, control interface
+* [`firmware/metro/`](firmware/metro) — motor control, command decoding, timeout safety
+* [`firmware/feather/`](firmware/feather) — WiFi access point, web server, control interface
 
 Both are Arduino sketches. See inline comments for pin mappings — these must match your own wiring if you're replicating this build.
 
